@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../helper/note_provider.dart';
-import '../models/note_list_item.dart';
+import '../widgets/note_list_item.dart';
 import '../utils/constants.dart';
 
 class NoteListScreen extends StatelessWidget {
