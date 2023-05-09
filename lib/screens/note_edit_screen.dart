@@ -207,8 +207,7 @@ class _NoteEditScreenState extends State {
     String title = titleController.text.trim();
     String content = contentController.text.trim();
     String? imagePath = _image?.path ?? ''; // use null-aware operator
-    ;
-
+    
     if (id != null) {
       Provider.of<NoteProvider>(this.context, listen: false)
           .addOrUpdateNote(id, title, content, imagePath, EditMode.UPDATE);
