@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../helper/note_provider.dart';
+import '../models/note_list_item.dart';
 import '../utils/constants.dart';
 
 class NoteListScreen extends StatelessWidget {
   const NoteListScreen({super.key});
 
+  @override
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -22,7 +24,44 @@ class NoteListScreen extends StatelessWidget {
             ),
           );
         } else {
-          return Container();
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Scaffold(
+              body: Consumer<NoteProvider>(
+                child: noNotesUI(context),
+                builder: (context, noteprovider, child) =>
+                    noteprovider.items.isEmpty
+                        ? child as Widget
+                        : ListView.builder(
+                            itemCount: noteprovider.items.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return header();
+                              } else {
+                                final i = index - 1;
+                                final item = noteprovider.items[i];
+                                return ListItem(
+                                  id: item.id,
+                                  title: item.title,
+                                  content: item.content,
+                                  imagePath: item.imagePath,
+                                  date: item.date,
+                                );
+                              }
+                            },
+                          ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  goToNoteEditScreen(context);
+                },
+                child: const Icon(Icons.add),
+              ),
+            );
+          }
+          return const SizedBox(
+            width: 0.0,
+            height: 0.0,
+          );
         }
       },
     );

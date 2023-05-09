@@ -43,6 +43,7 @@ dependencies:
   sqflite: ^2.2.8+1
   url_launcher: ^6.1.10
   google_fonts: ^4.0.4
+  line_awesome_flutter: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const NoteListScreen(),
           NoteViewScreen.route: (context) => const NoteViewScreen(),
-          NoteEditScreen.route: (context) => const NoteEditScreen(),
+          NoteEditScreen.route: (context) => NoteEditScreen(),
         },
       ),
     );
