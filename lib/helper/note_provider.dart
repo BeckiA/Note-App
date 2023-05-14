@@ -1,58 +1,67 @@
-import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:note_app/helper/database_helper.dart';
 
 import '../models/note.dart';
 import '../utils/constants.dart';
 
-class NoteProvider with ChangeNotifier {
-  List _items = [];
-  List get items {
-    return [..._items];
+class NoteController extends GetxController {
+  RxList<Note> items = <Note>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    getNotes();
   }
 
-  Future getNotes() async {
+  Future<void> getNotes() async {
     final noteList = await DatabaseHelper.getNotesFromDB();
-    _items = noteList
+    items.value = noteList
         .map((item) => Note(
-            id: item['id'],
-            title: item['title'],
-            content: item['content'],
-            imagePath: item['imagePath']))
+              id: item['id'],
+              title: item['title'],
+              content: item['content'],
+              imagePath: item['imagePath'],
+            ))
         .toList();
-
-    notifyListeners();
   }
 
   Note getNote(int id) {
-    return _items.firstWhere((note) => note.id == id);
+    return items.firstWhere((note) => note.id == id);
   }
 
-  Future deleteNote(int id) {
-    _items.removeWhere((element) => element.id == id);
-    notifyListeners();
-    return DatabaseHelper.delete(id);
+  Future<void> deleteNote(int id) async {
+    items.removeWhere((element) => element.id == id);
+    await DatabaseHelper.delete(id);
   }
 
-  Future addOrUpdateNote(int id, String title, String content, String imagePath,
-      EditMode editMode) async {
-    final note =
-        Note(id: id, title: title, content: content, imagePath: imagePath);
+  Future<void> addOrUpdateNote(
+    int id,
+    String title,
+    String content,
+    String imagePath,
+    EditMode editMode,
+  ) async {
+    final note = Note(
+      id: id,
+      title: title,
+      content: content,
+      imagePath: imagePath,
+    );
 
-    if (EditMode.ADD == editMode) {
-      _items.insert(0, note);
+    if (editMode == EditMode.ADD) {
+      items.insert(0, note);
     } else {
-      _items[_items.indexWhere((note) => note.id == id)] = note;
+      final index = items.indexWhere((note) => note.id == id);
+      if (index != -1) {
+        items[index] = note;
+      }
     }
 
-    notifyListeners();
-
-    DatabaseHelper.insert(
-      {
-        'id': note.id,
-        'title': note.title,
-        'content': note.content,
-        'imagePath': note.imagePath,
-      },
-    );
+    await DatabaseHelper.insert({
+      'id': note.id,
+      'title': note.title,
+      'content': note.content,
+      'imagePath': note.imagePath,
+    });
   }
 }

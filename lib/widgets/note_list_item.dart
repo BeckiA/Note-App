@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 import '../screens/note_view_screen.dart';
 import '../utils/constants.dart';
@@ -24,7 +26,8 @@ class ListItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(context, NoteViewScreen.route, arguments: id);
+          // Navigator.pushNamed(context, NoteViewScreen.route, arguments: id);
+          Get.toNamed(NoteViewScreen.route, arguments: {"id": id});
         },
         child: Container(
           width: double.infinity,

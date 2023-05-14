@@ -10,45 +10,21 @@ import '../utils/constants.dart';
 import '../widgets/delete_popup.dart';
 import 'note_view_screen.dart';
 
-class NoteEditScreen extends StatefulWidget {
-  static const route = '/note-edit';
+class NoteAddScreen extends StatefulWidget {
+  static const route = '/note-add';
   @override
-  _NoteEditScreenState createState() => _NoteEditScreenState();
+  _NoteAddScreenState createState() => _NoteAddScreenState();
 }
 
-class _NoteEditScreenState extends State<NoteEditScreen> {
+class _NoteAddScreenState extends State<NoteAddScreen> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
   File? _image;
   final picker = ImagePicker();
 
-  bool firstTime = true;
+  bool firstTime = false;
   late Note selectedNote;
   late dynamic id;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    if (firstTime) {
-      id = Get.arguments['id'] as int;
-
-      if (id == null) {
-        print("Hey");
-      } else {
-        selectedNote = Get.find<NoteController>().getNote(id);
-
-        titleController.text = selectedNote.title;
-        contentController.text = selectedNote.content;
-
-        if (selectedNote.imagePath != null) {
-          _image = File(selectedNote.imagePath);
-        }
-      }
-
-      firstTime = false;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,17 +51,6 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
             color: Colors.black,
             onPressed: () {
               getImage(ImageSource.gallery);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            color: Colors.red,
-            onPressed: () {
-              if (id != null) {
-                _showDialog();
-              } else {
-                Get.back();
-              }
             },
           ),
         ],
@@ -120,33 +85,6 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
                         image: DecorationImage(
                           image: FileImage(_image!),
                           fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Container(
-                          height: 30.0,
-                          width: 30.0,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.red,
-                          ),
-                          child: InkWell(
-                            onTap: () {
-                              setState(
-                                () {
-                                  _image = null;
-                                },
-                              );
-                            },
-                            child: const Icon(
-                              Icons.delete,
-                              size: 16.0,
-                            ),
-                          ),
                         ),
                       ),
                     ),
@@ -209,34 +147,14 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     String content = contentController.text.trim();
     String? imagePath = _image?.path ?? ''; // use null-aware operator
 
-    if (id != null) {
-      Get.find<NoteController>().addOrUpdateNote(
-        id,
-        title,
-        content,
-        imagePath,
-        EditMode.UPDATE,
-      );
-      Get.back();
-    } else {
-      int id = DateTime.now().millisecondsSinceEpoch;
-      Get.find<NoteController>().addOrUpdateNote(
-        id,
-        title,
-        content,
-        imagePath,
-        EditMode.ADD,
-      );
-      Get.offNamed(NoteViewScreen.route, arguments: {'id': id});
-    }
-  }
-
-  _showDialog() {
-    showDialog(
-      context: this.context,
-      builder: (context) {
-        return DeletePopUp(selectedNote: selectedNote);
-      },
+    int id = DateTime.now().millisecondsSinceEpoch;
+    Get.find<NoteController>().addOrUpdateNote(
+      id,
+      title,
+      content,
+      imagePath,
+      EditMode.ADD,
     );
+    Get.offNamed(NoteViewScreen.route, arguments: {'id': id});
   }
 }
